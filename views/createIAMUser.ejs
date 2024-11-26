@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create IAM Users</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <header class="bg-white shadow-md rounded-lg p-6 mb-8 flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">IAM User Management</h1>
+          <p class="text-gray-600">Manage your organization's IAM users.</p>
+        </div>
+        <button
+          onclick="window.location.href='/api/v2/dashboard'"
+          class="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 transition duration-300"
+        >
+          Go to Dashboard
+        </button>
+      </header>
+
+      <section class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Current IAM Users</h2>
+        <div class="overflow-x-auto">
+          <table class="table-auto w-full border border-gray-300">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-4 py-2 border border-gray-300 text-left text-gray-700">Name</th>
+                <th class="px-4 py-2 border border-gray-300 text-left text-gray-700">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% IAMUsers.forEach(user => { %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-2 border border-gray-300 text-gray-800"><%= user.name %></td>
+                <td class="px-4 py-2 border border-gray-300 text-gray-800">
+                  <%= user.userPermissions === 'all' ? 'Admin' : 
+                      user.userPermissions === 'read' ? 'Reader' : 
+                      user.userPermissions === 'write' ? 'Writer' : 'Unknown' %>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Create a New IAM User</h2>
+        <form action="/api/v2/createIAMUser" method="POST" class="space-y-6">
+          <div class="flex flex-col">
+            <label for="name" class="text-gray-600 mb-1">Name</label>
+            <input
+              type="text"
+              name="name"
+              required
+              class="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div class="flex flex-col">
+            <label for="password" class="text-gray-600 mb-1">Password</label>
+            <div class="flex items-center space-x-4">
+              <input
+                type="text"
+                name="password"
+                id="passwordField"
+                readonly
+                required
+                class="flex-grow px-4 py-2 rounded-md border border-gray-300 bg-gray-100 cursor-not-allowed focus:outline-none"
+              />
+              <button
+                type="button"
+                onclick="generatePassword()"
+                class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300"
+              >
+                Generate Password
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col">
+            <label for="role" class="text-gray-600 mb-1">Role</label>
+            <select
+              name="role"
+              required
+              class="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">Admin</option>
+              <option value="read">Reader</option>
+              <option value="write">Writer</option>
+            </select>
+          </div>
+          <button
+            type="submit"
+            class="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition duration-300"
+          >
+            Create User
+          </button>
+        </form>
+      </section>
+    </div>
+    <script>
+      function generatePassword() {
+        const length = 8;
+        const charset = "abcdefghijklmnopqrstuvwxyz123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let password = "";
+        for (let i = 0; i < length; i++) {
+          password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+        document.getElementById("passwordField").value = password;
+      }
+    </script>
+  </body>
+</html>

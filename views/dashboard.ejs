@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+
+      <header
+        class="bg-white shadow-md rounded-lg p-6 mb-8 flex flex-col md:flex-row items-center justify-between"
+      >
+        <div>
+          <p class="text-xl font-medium text-gray-800 mb-2">
+            Organization: <span class="font-semibold"><%= user.orgName %></span>
+          </p>
+          <p class="text-lg text-gray-600 mb-1">
+            Account ID: <span class="font-medium"><%= user.accountId %></span>
+          </p>
+          <p class="text-lg text-gray-600">
+            Role: <span class="font-medium capitalize"><%= user.role %></span>
+          </p>
+        </div>
+        <button
+          onclick="logoutUser()"
+          class="mt-4 md:mt-0 bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition duration-300"
+        >
+          Logout
+        </button>
+      </header>
+
+  
+      <% if (user.role === 'admin') { %>
+      <section id="iam-users" class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">IAM User Management</h2>
+        <button
+          onclick="location.href='/api/v2/createIAMUser'"
+          class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300"
+        >
+          Create IAM User
+        </button>
+      </section>
+      <% } %>
+
+      <section class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Additional Actions</h2>
+        <button
+          onclick="window.location.href='/api/v2/viewCounter'"
+          class="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition duration-300"
+        >
+          View Counters
+        </button>
+      </section>
+    </div>
+  </body>
+
+  <script>
+    async function logoutUser() {
+      try {
+        const response = await fetch("/api/v2/logout", {
+          method: "DELETE",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          window.location.href = "/api/v2/login";
+        } else {
+          console.error("Logout failed:", response.statusText);
+          alert("Failed to logout. Please try again.");
+        }
+      } catch (error) {
+        console.error("Error during logout:", error);
+        alert("An error occurred. Please try again.");
+      }
+    }
+  </script>
+</html>

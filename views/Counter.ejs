@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+
+  <body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+      <header class="bg-white shadow-md rounded-lg p-6 mb-8 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-700">Counters</h1>
+        <button
+          onclick="window.location.href='/api/v2/dashboard'"
+          class="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 transition duration-300"
+        >
+          Go to Dashboard
+        </button>
+      </header>
+
+      <section class="bg-white shadow-md rounded-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Counters</h2>
+        <div class="mt-8">
+          <form action="/api/v2/createCounter" method="POST" class="flex items-center space-x-4">
+            <input
+              type="text"
+              name="title"
+              placeholder="Enter counter title"
+              required
+              class="flex-grow px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              type="submit"
+              class="bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 transition duration-300"
+            >
+              Add Counter
+            </button>
+          </form>
+        </div>
+
+        <div class="space-y-4 mt-4">
+          <% counters.forEach(counter => { %>
+          <div class="flex items-center justify-between p-4 border rounded-md">
+            <span class="text-lg font-medium"><%= counter.title %>: <%= counter.counter %></span>
+            <div class="flex space-x-4">
+              <form action="/api/v2/incrementCounter/<%= counter.counterId %>" method="POST">
+                <input type="hidden" name="action" value="increment" />
+                <button
+                  type="submit"
+                  class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-300"
+                >
+                  Increment
+                </button>
+              </form>
+              <button
+                class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition duration-300"
+                onclick="deleteCounter('<%= counter.counterId %>')"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      async function deleteCounter(counterId) {
+        try {
+          const response = await fetch(`/api/v2/deleteCounter/${counterId}`, {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+          if (response.ok) {
+            alert('Counter deleted successfully.');
+            location.reload();
+          } else {
+            alert('Failed to delete counter.');
+          }
+        } catch (error) {
+          console.error('Error during deletion:', error);
+          alert('An error occurred. Please try again.');
+        }
+      }
+    </script>
+  </body>
+</html>
